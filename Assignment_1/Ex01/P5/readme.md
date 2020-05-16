@@ -10,7 +10,7 @@ Observations made from the output images:
 <br><br>
 In the case of input *gauss3.pgm*, the Fourier transform is not rotational symmetric because there are boundary artefacts. The Gaussian signal in the input image is very wide and extends until the image boundary, thus when the transform treats the image as periodic arrays of this input image, it would notice edges due to the boundaries.</li>
 <br>
-![gauss3_periodic](https://user-images.githubusercontent.com/36254239/82131320-58fc1d80-97d4-11ea-849b-15014a102af4.png)
+![gauss3_periodic](https://user-images.githubusercontent.com/36254239/82131337-8943bc00-97d4-11ea-95c8-048d7fc216cf.jpg)
 <br>
   <li>In the image out_tile.pgm, the artefacts that we may observe are the horizontal and vertical lines due to the boundary, as well as streaks of slanted lines. These streaks of slanted lines are present due to high changes in intensity, for example the transition from black lines to the grey tiles. In the red circles, we can spot some lines in the high frequency. These may appear due to aliasing, as they represent higher frequencies (sharp edges) not present in the original image.
 </li>
