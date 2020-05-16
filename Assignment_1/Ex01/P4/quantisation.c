@@ -71,6 +71,7 @@ float uniform_noise(float a, float b)
   double n_1;
 
   // INSERT CODE HERE
+  n_1 = a + (float)rand() / RAND_MAX * (b-a);
  
   return n_1;
 
@@ -89,10 +90,15 @@ float gaussian_noise(float sigma, float mu)
   /* compute random variables with normal distribution */
 
   // INSERT CODE HERE
+  U = (float)rand() / RAND_MAX;
+  V = (float)rand() / RAND_MAX;
+
+  n_1 = sqrt(-2*log(U)) * cos(2*M_PI*V);
 
   /* compute random variables with normal distribution sigma and mean mu */
 
   // INSERT CODE HERE
+  n_1  = n_1*sigma + mu;
 
   return n_1;
 }
@@ -185,6 +191,7 @@ n_1 = 0;
 /* compute interval size d */
 
 // INSERT CODE HERE
+d = pow(2, 8-q);
 
 for (j=1; j<=ny; j++)
  for (i=1; i<=nx; i++)
@@ -202,7 +209,7 @@ for (j=1; j<=ny; j++)
     /* compute quantisation */
 
     // INSERT CODE HERE
-
+  	f[i][j] = (floor(g[i][j]/d+n_1)+0.5)*d;
  }
 
 
@@ -215,7 +222,18 @@ psnr = 0.0;
 /* compute MSE und PSNR */
 
 // INSERT CODE HERE
+//MSE
+float sum_sqr = 0.0;
+for (j=1; j<=ny; j++) {
+  	for (i=1; i<=nx; i++) {
+  		float err = f[i][j] - g[i][j];
+  		sum_sqr += err * err;
+  	}
+}
+mse = sum_sqr / nx * ny;
 
+//psnr
+psnr = 10 * log10(d*d/mse);
 
 
 /* ---- error measures ---- */
