@@ -14,6 +14,6 @@ In the case of input *gauss3.pgm*, the Fourier transform is not rotational symme
 </li>
 <br>
 
-![out_tile](Assignment_1/Ex01/P5/out_tile_annotated.jpg)
+![out_tile_annotated](https://user-images.githubusercontent.com/36254239/82131251-7d0b2f00-97d3-11ea-9039-cca34b4484db.jpg)
 </ol>
 
