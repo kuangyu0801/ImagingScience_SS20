@@ -100,7 +100,7 @@ return;
 
 /*--------------------------------------------------------------------------*/
 
-void rescale 
+void rescale
 
      (double  **u,        /* input image, range [0,255] */
       long    nx,         /* size in x direction */
@@ -109,9 +109,9 @@ void rescale
       double  b,          /* largest transformed grey level */
       double  *g)         /* transformed grey levels */
 
-/* 
- affine rescaling of the grey values of u such that 
- min(u) -> a, and max(u) -> b. 
+/*
+ affine rescaling of the grey values of u such that
+ min(u) -> a, and max(u) -> b.
 */
 
 {
@@ -124,6 +124,18 @@ double  factor;     /* time saver */
 /*
  INSERT CODE HERE
 */
+min = u[0][0];
+max = u[0][0];
+for (i=0; i<nx; i++){
+    for (j=0; j<ny; j++) {
+        if (u[i][j]>max) {
+            max = u[i][j];
+        }
+        if (u[i][j]<min) {
+            min = u[i][j];
+        }
+    }
+}
 
 /* rescale */
 
@@ -131,6 +143,24 @@ double  factor;     /* time saver */
  INSERT CODE HERE
 */
 
+/* Solving for the scaling factors */
+/* from the equation: a = factor * min + factor2 */
+/*                    b = factor * max + factor2 */
+/* where factor = slope and factor2 = offset */
+factor = (a-b)/(min-max);
+
+/* Create mapping array g */
+for (k=0; k<255; k++) {
+    g[k] = factor * k + a - (factor * min);
+}
+
+/* Added printing of intermediate values for analysis */
+printf("Min: %lf\n", min);
+printf("Max: %lf\n", max);
+printf("Slope: %lf\n", factor);
+printf("Offset: %lf\n", a - (factor * min));
+printf("Min value mapped to: %lf\n", g[(long)min]);
+printf("Max value mapped to: %lf\n", g[(long)max]);
 return;
 }
 
@@ -141,7 +171,7 @@ void gamma_correct
      (double  gamma,      /* gamma correction factor */
       double  *g)         /* transformed grey levels */
 
-/* 
+/*
  applies gamma correction to the 256 grey levels that may appear
  in byte wise coded images
 */
@@ -167,8 +197,8 @@ char   in[80];               /* for reading data */
 char   out[80];              /* for reading data */
 double **u;                  /* image */
 double *g;                   /* grey level mapping */
-long   i, j;                 /* loop variables */ 
-long   nx, ny;               /* image size in x, y direction */ 
+long   i, j;                 /* loop variables */
+long   nx, ny;               /* image size in x, y direction */
 long   transform;            /* type of point transformation */
 double a, b;                 /* rescaling bounds */
 double gamma;                /* gamma correction factor */
@@ -242,16 +272,16 @@ printf("\n");
 alloc_vector (&g, 256);
 
 /* calculate greyscale transformation vector */
-if (transform == 0) 
+if (transform == 0)
    rescale (u, nx, ny, a, b, g);
-if (transform == 1) 
+if (transform == 1)
    gamma_correct (gamma, g);
 
 /* apply greyscale transformation to the image */
 for (i=1; i<=nx; i++)
  for (j=1; j<=ny; j++)
      u[i][j] = g[(long)(u[i][j])];
- 
+
 
 /* ---- write output image (pgm format P5) ---- */
 
