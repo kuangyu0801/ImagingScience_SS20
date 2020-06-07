@@ -165,7 +165,7 @@ void rescale
 }
 
 /*--------------------------------------------------------------------------*/
-
+// DONE: question-6
 void gamma_correct
 
      (double  gamma,      /* gamma correction factor */
@@ -178,10 +178,24 @@ void gamma_correct
 
 {
     long  k;   /* loop variable */
-
+    printf("gamma: %lf\n", gamma);
     /*
      INSERT CODE HERE
     */
+    double exp = (1 / gamma);
+    double weight =  pow(255, 1 - exp);
+    printf("weight: 255^%lf\n", weight);
+
+    for (k=0; k<255; k++) {
+
+        double k_scale =  pow(k, exp);
+
+        g[k] = weight * k_scale;
+
+/*        printf("k_scale: %ld^%lf: %lf \n", k, exp , k_scale);
+
+        printf("g[%ld]: %lf\n",k , g[k]);*/
+    }
 
     return;
 }
