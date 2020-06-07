@@ -25,13 +25,13 @@ void alloc_vector
 
 
 {
-*vector = (double *) malloc (n * sizeof(double));
-if (*vector == NULL)
-   {
-   printf("alloc_vector: not enough storage available\n");
-   exit(1);
-   }
-return;
+    *vector = (double *) malloc (n * sizeof(double));
+    if (*vector == NULL)
+    {
+        printf("alloc_vector: not enough storage available\n");
+        exit(1);
+    }
+    return;
 }
 
 /*--------------------------------------------------------------------------*/
@@ -46,24 +46,24 @@ void alloc_matrix
 
 
 {
-long i;
+    long i;
 
-*matrix = (double **) malloc (nx * sizeof(double *));
-if (*matrix == NULL)
-   {
-   printf("alloc_matrix: not enough storage available\n");
-   exit(1);
-   }
-for (i=0; i<nx; i++)
-    {
-    (*matrix)[i] = (double *) malloc (ny * sizeof(double));
-    if ((*matrix)[i] == NULL)
+    *matrix = (double **) malloc (nx * sizeof(double *));
+    if (*matrix == NULL)
        {
-       printf("alloc_matrix: not enough storage available\n");
-       exit(1);
+           printf("alloc_matrix: not enough storage available\n");
+           exit(1);
        }
-    }
-return;
+    for (i=0; i<nx; i++)
+        {
+        (*matrix)[i] = (double *) malloc (ny * sizeof(double));
+        if ((*matrix)[i] == NULL)
+            {
+                printf("alloc_matrix: not enough storage available\n");
+                exit(1);
+            }
+        }
+    return;
 }
 
 /*--------------------------------------------------------------------------*/
@@ -76,8 +76,8 @@ void disalloc_vector
      /* disallocates storage for a vector of size n */
 
 {
-free(vector);
-return;
+    free(vector);
+    return;
 }
 
 /*--------------------------------------------------------------------------*/
@@ -91,11 +91,11 @@ void disalloc_matrix
      /* disallocates storage for matrix of size nx * ny */
 
 {
-long i;
-for (i=0; i<nx; i++)
-    free(matrix[i]);
-free(matrix);
-return;
+    long i;
+    for (i=0; i<nx; i++)
+        free(matrix[i]);
+    free(matrix);
+    return;
 }
 
 /*--------------------------------------------------------------------------*/
@@ -115,53 +115,53 @@ void rescale
 */
 
 {
-long    i, j, k;    /* loop variables */
-double  min, max;   /* extrema of u */
-double  factor;     /* time saver */
+    long    i, j, k;    /* loop variables */
+    double  min, max;   /* extrema of u */
+    double  factor;     /* time saver */
 
-/* determine extrema of u */
+    /* determine extrema of u */
 
-/*
- INSERT CODE HERE
-*/
-min = u[0][0];
-max = u[0][0];
-for (i=0; i<nx; i++){
-    for (j=0; j<ny; j++) {
-        if (u[i][j]>max) {
-            max = u[i][j];
-        }
-        if (u[i][j]<min) {
-            min = u[i][j];
+    /*
+     INSERT CODE HERE
+    */
+    min = u[0][0];
+    max = u[0][0];
+    for (i=0; i<nx; i++){
+        for (j=0; j<ny; j++) {
+            if (u[i][j]>max) {
+                max = u[i][j];
+            }
+            if (u[i][j]<min) {
+                min = u[i][j];
+            }
         }
     }
-}
 
-/* rescale */
+    /* rescale */
 
-/*
- INSERT CODE HERE
-*/
+    /*
+     INSERT CODE HERE
+    */
 
-/* Solving for the scaling factors */
-/* from the equation: a = factor * min + factor2 */
-/*                    b = factor * max + factor2 */
-/* where factor = slope and factor2 = offset */
-factor = (a-b)/(min-max);
+    /* Solving for the scaling factors */
+    /* from the equation: a = factor * min + factor2 */
+    /*                    b = factor * max + factor2 */
+    /* where factor = slope and factor2 = offset */
+    factor = (a-b)/(min-max);
 
-/* Create mapping array g */
-for (k=0; k<255; k++) {
-    g[k] = factor * k + a - (factor * min);
-}
+    /* Create mapping array g */
+    for (k=0; k<255; k++) {
+        g[k] = factor * k + a - (factor * min);
+    }
 
-/* Added printing of intermediate values for analysis */
-printf("Min: %lf\n", min);
-printf("Max: %lf\n", max);
-printf("Slope: %lf\n", factor);
-printf("Offset: %lf\n", a - (factor * min));
-printf("Min value mapped to: %lf\n", g[(long)min]);
-printf("Max value mapped to: %lf\n", g[(long)max]);
-return;
+    /* Added printing of intermediate values for analysis */
+    printf("Min: %lf\n", min);
+    printf("Max: %lf\n", max);
+    printf("Slope: %lf\n", factor);
+    printf("Offset: %lf\n", a - (factor * min));
+    printf("Min value mapped to: %lf\n", g[(long)min]);
+    printf("Max value mapped to: %lf\n", g[(long)max]);
+    return;
 }
 
 /*--------------------------------------------------------------------------*/
@@ -177,13 +177,13 @@ void gamma_correct
 */
 
 {
-long  k;   /* loop variable */
+    long  k;   /* loop variable */
 
-/*
- INSERT CODE HERE
-*/
+    /*
+     INSERT CODE HERE
+    */
 
-return;
+    return;
 }
 
 
@@ -192,130 +192,136 @@ return;
 int main ()
 
 {
-char   row[80];              /* for reading data */
-char   in[80];               /* for reading data */
-char   out[80];              /* for reading data */
-double **u;                  /* image */
-double *g;                   /* grey level mapping */
-long   i, j;                 /* loop variables */
-long   nx, ny;               /* image size in x, y direction */
-long   transform;            /* type of point transformation */
-double a, b;                 /* rescaling bounds */
-double gamma;                /* gamma correction factor */
-FILE   *inimage, *outimage;  /* input file, output file */
-unsigned char byte;          /* for data conversion */
+    char   row[80];              /* for reading data */
+    char   in[80];               /* for reading data */
+    char   out[80];              /* for reading data */
+    double **u;                  /* image */
+    double *g;                   /* grey level mapping */
+    long   i, j;                 /* loop variables */
+    long   nx, ny;               /* image size in x, y direction */
+    long   transform;            /* type of point transformation */
+    double a, b;                 /* rescaling bounds */
+    double gamma;                /* gamma correction factor */
+    FILE   *inimage, *outimage;  /* input file, output file */
+    unsigned char byte;          /* for data conversion */
 
-printf("\n");
-printf("POINT TRANSFORMATIONS\n\n");
-printf("*************************************************\n\n");
-printf("    Copyright 2002 by Joachim Weickert       \n");
-printf("    Faculty of Mathematics and Computer Science\n");
-printf("    Saarland University, Germany              \n\n");
-printf("    All rights reserved. Unauthorized usage, \n");
-printf("    copying, hiring, and selling prohibited. \n\n");
-printf("    Send bug reports to                      \n");
-printf("    bruhn@vis.uni-stuttgart.de             \n\n");
-printf("*************************************************\n\n");
-
-
-/* ---- read input image (pgm format P5) ---- */
-
-/* read image name */
-printf("input image:                      ");
-gets (in);
-
-/* open pgm file and read header */
-inimage = fopen(in,"rb");
-fgets (row, 80, inimage);
-fgets (row, 80, inimage);
-while (row[0]=='#') fgets (row, 80, inimage);
-sscanf (row, "%ld %ld", &nx, &ny);
-fgets (row, 80, inimage);
-
-/* allocate storage */
-alloc_matrix (&u, nx+2, ny+2);
-
-/* read image data */
-for (j=1; j<=ny; j++)
- for (i=1; i<=nx; i++)
-     u[i][j] = (double) getc (inimage);
-fclose(inimage);
+    printf("\n");
+    printf("POINT TRANSFORMATIONS\n\n");
+    printf("*************************************************\n\n");
+    printf("    Copyright 2002 by Joachim Weickert       \n");
+    printf("    Faculty of Mathematics and Computer Science\n");
+    printf("    Saarland University, Germany              \n\n");
+    printf("    All rights reserved. Unauthorized usage, \n");
+    printf("    copying, hiring, and selling prohibited. \n\n");
+    printf("    Send bug reports to                      \n");
+    printf("    bruhn@vis.uni-stuttgart.de             \n\n");
+    printf("*************************************************\n\n");
 
 
-/* ---- read other parameters ---- */
+    /* ---- read input image (pgm format P5) ---- */
 
-printf("available point transformations:\n");
-printf("(0) affine rescaling\n");
-printf("(1) gamma correction\n");
-printf("your choice:                      ");
-gets(row);  sscanf(row, "%ld", &transform);
-if (transform == 0)
+    /* read image name */
+    printf("input image:                      ");
+    gets (in);
+
+    /* open pgm file and read header */
+    inimage = fopen(in,"rb");
+    fgets (row, 80, inimage);
+    fgets (row, 80, inimage);
+    while (row[0]=='#') fgets (row, 80, inimage);
+    sscanf (row, "%ld %ld", &nx, &ny);
+    fgets (row, 80, inimage);
+
+    /* allocate storage */
+    alloc_matrix (&u, nx+2, ny+2);
+
+    /* read image data */
+    for (j=1; j<=ny; j++) {
+        for (i=1; i<=nx; i++) {
+            u[i][j] = (double) getc(inimage);
+        }
+    }
+
+    fclose(inimage);
+
+
+    /* ---- read other parameters ---- */
+
+    printf("available point transformations:\n");
+    printf("(0) affine rescaling\n");
+    printf("(1) gamma correction\n");
+    printf("your choice:                      ");
+    gets(row);  sscanf(row, "%ld", &transform);
+    if (transform == 0)
    {
-   printf("smallest grey value:              ");
-   gets(row);  sscanf(row, "%lf", &a);
-   printf("largest  grey value:              ");
-   gets(row);  sscanf(row, "%lf", &b);
+        printf("smallest grey value:              ");
+        gets(row);  sscanf(row, "%lf", &a);
+        printf("largest  grey value:              ");
+        gets(row);  sscanf(row, "%lf", &b);
    }
-if (transform == 1)
+    if (transform == 1)
    {
-   printf("gamma correction factor:          ");
-   gets(row);  sscanf(row, "%lf", &gamma);
+        printf("gamma correction factor:          ");
+        gets(row);  sscanf(row, "%lf", &gamma);
    }
-printf("output image:                     ");
-gets(out);
-printf("\n");
+    printf("output image:                     ");
+    gets(out);
+    printf("\n");
 
 
-/* ---- greyscale transformation ---- */
+    /* ---- greyscale transformation ---- */
 
-/* allocate storage for greyscale transformation vector */
-alloc_vector (&g, 256);
+    /* allocate storage for greyscale transformation vector */
+    alloc_vector (&g, 256);
 
-/* calculate greyscale transformation vector */
-if (transform == 0)
-   rescale (u, nx, ny, a, b, g);
-if (transform == 1)
-   gamma_correct (gamma, g);
+    /* calculate greyscale transformation vector */
+    if (transform == 0)
+       rescale (u, nx, ny, a, b, g);
+    if (transform == 1)
+       gamma_correct (gamma, g);
 
-/* apply greyscale transformation to the image */
-for (i=1; i<=nx; i++)
- for (j=1; j<=ny; j++)
-     u[i][j] = g[(long)(u[i][j])];
+    /* apply greyscale transformation to the image */
+    for (i=1; i<=nx; i++) {
+        for (j=1; j<=ny; j++) {
+            u[i][j] = g[(long)(u[i][j])];
+        }
+    }
 
 
-/* ---- write output image (pgm format P5) ---- */
 
-/* open file and write header (incl. filter parameters) */
-outimage = fopen (out, "wb");
-fprintf (outimage, "P5 \n");
-fprintf (outimage, "# input image:  %s\n", in);
-if (transform == 0)
+    /* ---- write output image (pgm format P5) ---- */
+
+    /* open file and write header (incl. filter parameters) */
+    outimage = fopen (out, "wb");
+    fprintf (outimage, "P5 \n");
+    fprintf (outimage, "# input image:  %s\n", in);
+    if (transform == 0)
    {
-   fprintf (outimage, "# affine rescaling\n");
-   fprintf (outimage, "# a: %6.2lf\n", a);
-   fprintf (outimage, "# b: %6.2lf\n", b);
+        fprintf (outimage, "# affine rescaling\n");
+        fprintf (outimage, "# a: %6.2lf\n", a);
+        fprintf (outimage, "# b: %6.2lf\n", b);
    }
-if (transform == 1)
+    if (transform == 1)
    {
-   fprintf (outimage, "# gamma correction\n");
-   fprintf (outimage, "# gamma: %4.2lf\n", gamma);
+        fprintf (outimage, "# gamma correction\n");
+        fprintf (outimage, "# gamma: %4.2lf\n", gamma);
    }
-fprintf (outimage, "%ld %ld \n255\n", nx, ny);
+    fprintf (outimage, "%ld %ld \n255\n", nx, ny);
 
 /* write image data and close file */
-for (j=1; j<=ny; j++)
- for (i=1; i<=nx; i++)
-     {
-     byte = (unsigned char)(u[i][j]);
-     fwrite (&byte, sizeof(unsigned char), 1, outimage);
-     }
-fclose(outimage);
-printf("output image %s successfully written\n\n", out);
+    for (j=1; j<=ny; j++) {
+        for (i=1; i<=nx; i++) {
+            byte = (unsigned char)(u[i][j]);
+            fwrite (&byte, sizeof(unsigned char), 1, outimage);
+        }
+    }
+    fclose(outimage);
+    printf("output image %s successfully written\n\n", out);
 
 
-/* ---- disallocate storage ---- */
+    /* ---- disallocate storage ---- */
 
-disalloc_vector (g, 256);
-disalloc_matrix (u, nx+2, ny+2);
-return(0);
+    disalloc_vector (g, 256);
+    disalloc_matrix (u, nx+2, ny+2);
+    return(0);
 }
