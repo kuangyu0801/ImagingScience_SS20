@@ -18,7 +18,7 @@
 void alloc_vector
 
      (float **vector,   /* vector */
-      long  n)          /* size */     
+      long  n)          /* size */
 
      /* allocates storage for vector of size n */
 
@@ -39,7 +39,7 @@ return;
 void disalloc_vector
 
      (float *vector,    /* vector */
-      long  n)          /* size */  
+      long  n)          /* size */
 
      /* disallocates storage for vector of size n */
 
@@ -149,7 +149,7 @@ return;
 
 void jpeg_multiply_block
 
-     (float   **c_block)         /* coefficients of the DCT */                
+     (float   **c_block)         /* coefficients of the DCT */
 
 /*
   weights 8x8 coefficient block with JPEG weighting matrix
@@ -238,11 +238,11 @@ return;
 
 void equal_multiply_block
 
-     (float   **c_block,      /* coefficients of the DCT */     
-      long    factor)                   
+     (float   **c_block,      /* coefficients of the DCT */
+      long    factor)
 
 /*
-  multiplies an 8x8 coefficient block with a given factor 
+  multiplies an 8x8 coefficient block with a given factor
 */
 
 {
@@ -260,7 +260,7 @@ return;
 
 void jpeg_divide_block
 
-     (float   **c_block)         /* coefficients of the DCT */             
+     (float   **c_block)         /* coefficients of the DCT */
 
 /*
   weights 8x8 coefficient block with inverse JPEG weighting matrix
@@ -349,7 +349,7 @@ return;
 
 void round_block_coeff
 
-     (float   **c_block)         /* coefficients of the DCT */    
+     (float   **c_block)         /* coefficients of the DCT */
 
 /*
   round entries of a 8x8 coefficient block
@@ -360,8 +360,8 @@ long    i, j;        /* loop variables */
 
 for(i=0;i<=7;i++)
   for (j=0;j<=7;j++)
-    {    
-      c_block[i][j] = rintf(c_block[i][j]);          
+    {
+      c_block[i][j] = rintf(c_block[i][j]);
     }
 
 return;
@@ -372,11 +372,11 @@ return;
 
 void equal_divide_block
 
-     (float   **c_block,      /* coefficients of the DCT */     
-      long    factor)                   
+     (float   **c_block,      /* coefficients of the DCT */
+      long    factor)
 
 /*
-  divides an 8x8 coefficient block by a given factor 
+  divides an 8x8 coefficient block by a given factor
 */
 
 {
@@ -394,16 +394,16 @@ return;
 void DCT_2d
 
      (float   **u,         /* image, unchanged */
-      float   **c,         /* coefficients of the DCT */        
+      float   **c,         /* coefficients of the DCT */
       long    nx,          /* pixel number in x-direction */
-      long    ny)          /* pixel number in y-direction */      
+      long    ny)          /* pixel number in y-direction */
 
 /*
   calulates DCT of input image
 */
 
 {
-long    i, j, m, p;  /* loop variables */
+long    i, j, m, p, row, col;  /* loop variables */
 float   nx_1;        /* time saver */
 float   ny_1;        /* time saver */
 float   pi;          /* variable pi */
@@ -439,28 +439,41 @@ cy[0] = sqrt(1.0/ny);
 for (p=1;p<ny;p++)
   cy[p] = sqrt(2.0/ny);
 
+//Initialize coefficient matrix
+for (row=0; row<nx; row++) {
+    for (col=0; col<ny; col++) {
+        c[row][col] = 0.0;
+        tmp[row][col] = 0.0;
+    }
+}
 
-/* ---- DCT in y-direction ---- */ 
+/* ---- DCT in y-direction ---- */
 
 for (i=0; i<nx; i++)
   for (p=0; p<ny; p++)
     {
       /*
   SUPPLEMENT CODE HERE
-      */        
+      */
+
+      for (m=0; m<ny; m++) {
+        	tmp[i][p] += u[i][m] * cos((2*m+1)*p*ny_1) * cy[p];
+        }
      }
 
 
-/* ---- DCT in x-direction ---- */ 
+/* ---- DCT in x-direction ---- */
 
 for (p=0; p<nx; p++)
   for (j=0; j<ny; j++)
     {
       /*
   SUPPLEMENT CODE HERE
-      */            
+      */
+      for (m=0; m<nx; m++) {
+        	c[p][j] += tmp[m][j] * cos((2*m+1)*p*nx_1) * cx[p];
+        }
      }
-
 
 /* ---- free memory ---- */
 
@@ -477,16 +490,16 @@ return;
 void IDCT_2d
 
      (float   **u,         /* image, unchanged */
-      float   **c,         /* coefficients of the DCT */        
+      float   **c,         /* coefficients of the DCT */
       long    nx,          /* pixel number in x-direction */
-      long    ny)          /* pixel number in y-direction */      
+      long    ny)          /* pixel number in y-direction */
 
 /*
   calulates inverse DCT of input image
 */
 
 {
-long    i, j, m, p;  /* loop variables */
+long    i, j, m, p, row, col;  /* loop variables */
 float   nx_1;        /* time saver */
 float   ny_1;        /* time saver */
 float   pi;          /* variable pi */
@@ -511,7 +524,6 @@ alloc_matrix (&tmp, nx, ny);
 alloc_vector (&cx, nx);
 alloc_vector (&cy, ny);
 
-
 /* ---- set up coefficients ---- */
 
 cx[0] = sqrt(1.0/nx);
@@ -522,27 +534,43 @@ cy[0] = sqrt(1.0/ny);
 for (m=1; m<ny; m++)
     cy[m] = sqrt (2.0 / ny);
 
+//Re-initialize tmp and image u to store results
+for (row=0; row<nx; row++) {
+    for (col=0; col<ny; col++) {
+        tmp[row][col] = 0.0;
+        u[row][col] = 0.0;
+    }
+}
 
-/* ---- DCT in y-direction ---- */ 
+/* ---- IDCT in y-direction ---- */
 
-for (i=0; i<nx; i++)
+for (i=0; i<nx; i++){
   for (m=0; m<ny; m++)
     {
       /*
   SUPPLEMENT CODE HERE
-      */    
+      */
+
+      for (p=0; p<ny; p++) {
+        	tmp[i][m] += c[i][p] * cos(ny_1*(2*m+1)*p) * cy[p];
+        }
+
     }
- 
+}
 
-/* ---- DCT in x-direction ---- */ 
+/* ---- IDCT in x-direction ---- */
 
-for (m=0; m<nx; m++)
+for (m=0; m<nx; m++){
   for (j=0; j<ny; j++)
     {
       /*
   SUPPLEMENT CODE HERE
-      */    
+      */
+      for (p=0; p<nx; p++) {
+        	u[m][j] += tmp[p][j] * cos(nx_1*(2*m+1)*p) * cx[p];
+        }
     }
+}
 
 
 /* ---- free memory ---- */
@@ -559,9 +587,9 @@ return;
 
 void remove_freq_2d
 
-     (float   **c,         /* in and out: coefficients of the DCT */        
+     (float   **c,         /* in and out: coefficients of the DCT */
       long    nx,          /* pixel number in x-direction */
-      long    ny)          /* pixel number in y-direction */      
+      long    ny)          /* pixel number in y-direction */
 
 /*
  remove frequencies
@@ -570,12 +598,12 @@ void remove_freq_2d
 {
 long    i, j;        /* loop variables */
 
-/* sets frequencies to zero */ 
+/* sets frequencies to zero */
 for (i=0;i<nx;i++)
   for (j=0;j<ny;j++)
     if ((i >= nx/sqrt(10)) || (j >= ny/sqrt(10)))
       c[i][j]=0;
- 
+
 return;
 }
 
@@ -585,9 +613,9 @@ return;
 void blockwise_DCT_2d
 
      (float   **u,         /* in: image */
-      float   **c,         /* out: coefficients of the DCT */        
+      float   **c,         /* out: coefficients of the DCT */
       long    nx,          /* pixel number in x-direction */
-      long    ny)          /* pixel number in y-direction */      
+      long    ny)          /* pixel number in y-direction */
 
 /*
  calculates DCT in image blocks of size 8x8
@@ -595,7 +623,7 @@ void blockwise_DCT_2d
 
 {
 long    i, j;       /* loop variables */
-long    k, l;    
+long    k, l;
 float   **u_block;    /* 8x8 blocks */
 float   **c_block;
 
@@ -610,14 +638,14 @@ for (i=0;i<nx;i+=8)
      for (k=0;k<=7;k++)
       for (l=0;l<=7;l++)
         u_block[k][l] = u[i+k][j+l];
-      
+
      /* DCT of 8x8 block */
      DCT_2d(u_block, c_block, 8, 8);
-      
+
      /* copy back coefficients */
      for (k=0;k<=7;k++)
       for (l=0;l<=7;l++)
-    c[i+k][j+l] = c_block[k][l];           
+        c[i+k][j+l] = c_block[k][l];
      }
 
 /* free memory for 8x8 block */
@@ -632,16 +660,16 @@ return;
 void blockwise_IDCT_2d
 
      (float   **u,         /* out: image */
-      float   **c,         /* in: coefficients of the DCT */        
+      float   **c,         /* in: coefficients of the DCT */
       long    nx,          /* pixel number in x-direction */
-      long    ny)          /* pixel number in y-direction */      
+      long    ny)          /* pixel number in y-direction */
 /*
  calculates inverse DCT in image blocks of size 8x8
 */
 
 {
 long    i, j;       /* loop variables */
-long    k, l;    
+long    k, l;
 float   **u_block;    /* 8x8 blocks */
 float   **c_block;
 
@@ -656,14 +684,14 @@ for (i=0;i<nx;i+=8)
     for (k=0;k<=7;k++)
       for (l=0;l<=7;l++)
         c_block[k][l] = c[i+k][j+l];
-      
+
     /* inverse DCT of 8x8 block */
     IDCT_2d(u_block, c_block, 8, 8);
-      
+
     /* copy back coefficients */
     for (k=0;k<=7;k++)
       for (l=0;l<=7;l++)
-        u[i+k][j+l] = u_block[k][l];           
+        u[i+k][j+l] = u_block[k][l];
     }
 
 /* free memory for 8x8 block */
@@ -678,16 +706,16 @@ return;
 
 void blockwise_remove_freq_2d
 
-     (float   **c,         /* in and out: coefficients of the DCT */        
+     (float   **c,         /* in and out: coefficients of the DCT */
       long    nx,          /* pixel number in x-direction */
-      long    ny)          /* pixel number in y-direction */      
+      long    ny)          /* pixel number in y-direction */
 /*
  removes frequencies within 8x8 block
 */
 
 {
 long    i, j;         /* loop variables */
-long    k, l;         /* loop variables */ 
+long    k, l;         /* loop variables */
 float   **c_block;    /* 8x8 block */
 
 
@@ -702,14 +730,14 @@ for (i=0;i<nx;i+=8)
       for (k=0;k<=7;k++)
         for (l=0;l<=7;l++)
           c_block[k][l] = c[i+k][j+l];
- 
+
       /* set frequencies to zero */
-      remove_freq_2d(c_block,8,8);      
+      remove_freq_2d(c_block,8,8);
 
       /* copy back coefficients */
       for (k=0;k<=7;k++)
         for (l=0;l<=7;l++)
-          c[i+k][j+l] = c_block[k][l];       
+          c[i+k][j+l] = c_block[k][l];
     }
 
 /* free memory for 8x8 block */
@@ -723,16 +751,16 @@ return;
 
 void blockwise_quantisation_jpeg_2d
 
-     (float   **c,         /* in and out: coefficients of the DCT */        
+     (float   **c,         /* in and out: coefficients of the DCT */
       long    nx,          /* pixel number in x-direction */
-      long    ny)          /* pixel number in y-direction */      
+      long    ny)          /* pixel number in y-direction */
 /*
  quantises coefficients of 8x8 block
 */
 
 {
 long    i, j;         /* loop variables */
-long    k, l;         /* loop variables */ 
+long    k, l;         /* loop variables */
 float   **c_block;    /* 8x8 block */
 
 
@@ -747,20 +775,20 @@ for (i=0;i<nx;i+=8)
       for (k=0;k<=7;k++)
         for (l=0;l<=7;l++)
           c_block[k][l] = c[i+k][j+l];
-       
+
       /* scale coefficients of 8x8 block */
-      jpeg_divide_block(c_block);       
- 
+      jpeg_divide_block(c_block);
+
       /* round coefficients */
       round_block_coeff(c_block);
-      
+
       /* rescale coefficients of 8x8 block */
-      jpeg_multiply_block(c_block);    
+      jpeg_multiply_block(c_block);
 
       /* copy back coefficients */
       for (k=0;k<=7;k++)
         for (l=0;l<=7;l++)
-          c[i+k][j+l] = c_block[k][l];       
+          c[i+k][j+l] = c_block[k][l];
      }
 
 /* free memory for 8x8 block */
@@ -774,16 +802,16 @@ return;
 
 void blockwise_quantisation_equal_2d
 
-     (float   **c,         /* in and out: coefficients of the DCT */        
+     (float   **c,         /* in and out: coefficients of the DCT */
       long    nx,          /* pixel number in x-direction */
-      long    ny)          /* pixel number in y-direction */      
+      long    ny)          /* pixel number in y-direction */
 /*
  quantises coefficients of 8x8 block
 */
 
 {
 long    i, j;         /* loop variables */
-long    k, l;         /* loop variables */ 
+long    k, l;         /* loop variables */
 long    count;        /* counter */
 float   **c_block;    /* 8x8 block */
 
@@ -799,20 +827,20 @@ for (i=0;i<nx;i+=8)
       for (k=0;k<=7;k++)
         for (l=0;l<=7;l++)
           c_block[k][l] = c[i+k][j+l];
-       
-      /* scale coefficients of 8x8 block */     
+
+      /* scale coefficients of 8x8 block */
       equal_divide_block(c_block,40);
- 
+
       /* round coefficients */
       round_block_coeff(c_block);
-      
-      /* rescale coefficients of 8x8 block */     
+
+      /* rescale coefficients of 8x8 block */
       equal_multiply_block(c_block,40);
 
       /* copy back coefficients */
       for (k=0;k<=7;k++)
         for (l=0;l<=7;l++)
-          c[i+k][j+l] = c_block[k][l];       
+          c[i+k][j+l] = c_block[k][l];
     }
 
 /* free memory for 8x8 block */
@@ -833,8 +861,8 @@ char   out1[80];             /* for writing data */
 char   out2[80];             /* for writing data */
 float  **u;                  /* image */
 float  **c;                  /* DCT coefficients */
-long   i, j;                 /* loop variables */ 
-long   nx, ny;               /* image size in x, y direction */ 
+long   i, j;                 /* loop variables */
+long   nx, ny;               /* image size in x, y direction */
 long   flag;                 /* processing flag */
 long   counter;              /* count variable */
 FILE   *inimage, *outimage;  /* input file, output file */
@@ -912,7 +940,7 @@ printf("output image:                         ");
 gets(out2);
 printf("\n");
 printf("\n");
-printf("\nyou have the following options:"); 
+printf("\nyou have the following options:");
 printf("\n");
 printf("\n   (1) DCT/IDCT of the whole image   ");
 printf("\n   (2) DCT/IDCT of 8x8 blocks        ");
@@ -935,43 +963,43 @@ printf("\n\n");
 switch(flag) {
  case 1 :
    /* perform DCT and IDCT for the whole image */
-   DCT_2d (u, c, nx, ny);   
-   IDCT_2d (u, c, nx, ny);   
+   DCT_2d (u, c, nx, ny);
+   IDCT_2d (u, c, nx, ny);
    break;
- case 2 :      
+ case 2 :
    /* perform DCT and IDCT in 8x8 blocks */
-   blockwise_DCT_2d (u, c, nx, ny);      
+   blockwise_DCT_2d (u, c, nx, ny);
    blockwise_IDCT_2d (u, c, nx, ny);
    break;
  case 3 :
    /* perform DCT and IDCT for the whole image */
-   /* remove frequencies */   
-   DCT_2d (u, c, nx, ny);   
+   /* remove frequencies */
+   DCT_2d (u, c, nx, ny);
    remove_freq_2d(c, nx, ny);
-   IDCT_2d (u, c, nx, ny);   
+   IDCT_2d (u, c, nx, ny);
    break;
- case 4 :      
+ case 4 :
    /* perform DCT and IDCT in 8x8 blocks */
    /* remove frequencies */
-   blockwise_DCT_2d (u, c, nx, ny);      
+   blockwise_DCT_2d (u, c, nx, ny);
    blockwise_remove_freq_2d(c, nx, ny);
    blockwise_IDCT_2d (u, c, nx, ny);
    break;
  case 5 :
    /* perform DCT and IDCT in 8x8 blocks */
    /* and use equal quantisation */
-   blockwise_DCT_2d (u, c, nx, ny);    
+   blockwise_DCT_2d (u, c, nx, ny);
    blockwise_quantisation_equal_2d(c, nx, ny);
    blockwise_IDCT_2d (u, c, nx, ny);
    break;
  case 6 :
    /* perform DCT and IDCT in 8x8 blocks */
    /* and use JPEG quantisation */
-   blockwise_DCT_2d (u, c, nx, ny);     
+   blockwise_DCT_2d (u, c, nx, ny);
    blockwise_quantisation_jpeg_2d(c, nx, ny);
    blockwise_IDCT_2d (u, c, nx, ny);
    break;
- default : 
+ default :
    printf("option (%ld) not available! \n\n\n",flag);
    return(0);
 }
@@ -979,16 +1007,16 @@ switch(flag) {
 
 /* count zero entries in the DCT coefficients */
 counter = 0;
- 
+
 for (j=0; j<ny; j++)
   for (i=0; i<nx; i++)
-    if (c[i][j]==0) 
+    if (c[i][j]==0)
       counter++;
 
 printf("percentage of zero coefficients %f\n\n",
        (float)counter/(nx*ny));
 
-   
+
 /* ---- compute logarithmised spectrum of c ---- */
 
 for (j=0; j<ny; j++)
