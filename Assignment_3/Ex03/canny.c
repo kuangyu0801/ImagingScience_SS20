@@ -408,7 +408,7 @@ void getderivatives
 {
     int i,j;
     // compute the derivatives of u using the sobel operator
-
+    // TODO: missing code here
     /*
       INSERT MISSING CODE HERE
     */
