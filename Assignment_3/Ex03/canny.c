@@ -102,17 +102,17 @@ return;
 
 /*--------------------------------------------------------------------------*/
 
-void presmooth 
+void presmooth
 
      (float    **f,       /* input: original image */
       float    **u,       /* output: smoothed */
-      long     nx,        /* image dimension in x direction */ 
-      long     ny,        /* image dimension in y direction */ 
+      long     nx,        /* image dimension in x direction */
+      long     ny,        /* image dimension in y direction */
       float    sigma)     /* standard deviation of Gaussian */
 
 
-      
-/* 
+
+/*
  Gaussian convolution. Copyright by Joachim Weickert 5/2000
 */
 
@@ -123,15 +123,15 @@ long    length;               /* convolution vector: 0..length */
 float   sum;                  /* for summing up */
 float   *conv;                /* convolution vector */
 float   *help;                /* row or column with dummy boundaries */
-      
-     
+
+
 /* ------------------------ diffusion in x direction -------------------- */
 
 /* calculate length of convolution vector */
 length = (long)(3.0 * sigma) + 1;
 if (length > nx)
    {
-   printf("gauss_conv: sigma too large \n"); 
+   printf("gauss_conv: sigma too large \n");
    exit(0);
    }
 
@@ -140,8 +140,8 @@ alloc_vector (&conv, length+1);
 
 /* calculate entries of convolution vector */
 for (i=0; i<=length; i++)
-    conv[i] = 1 / (sigma * sqrt(2.0 * 3.1415926)) 
-              * exp (- (i * i) / (2.0 * sigma * sigma));
+    conv[i] = 1 / (sigma * sqrt(2.0 * 3.1415926))
+              * exp(- (i * i) / (2.0 * sigma * sigma));
 
 /* normalization */
 sum = conv[0];
@@ -159,13 +159,13 @@ for (j=1; j<=ny; j++)
     for (i=1; i<=nx; i++)
         help[i+length-1] = f[i][j];
 
-    /* assign reflecting boundary conditions */       
+    /* assign reflecting boundary conditions */
     for (p=1; p<=length; p++)
       {
         help[length-p]      = help[length+p-1];
         help[nx+length-1+p] = help[nx+length-p];
       }
-    
+
     /* convolution step */
     for (i=length; i<=nx+length-1; i++)
         {
@@ -191,7 +191,7 @@ disalloc_vector (conv, length + 1);
 length = (long)(3.0 * sigma) + 1;
 if (length > ny)
    {
-   printf("gauss_conv: sigma too large \n"); 
+   printf("gauss_conv: sigma too large \n");
    exit(0);
    }
 
@@ -200,7 +200,7 @@ alloc_vector (&conv, length + 1);
 
 /* calculate entries of convolution vector */
 for (j=0; j<=length; j++)
-    conv[j] = 1 / (sigma * sqrt(2.0 * 3.1415927)) 
+    conv[j] = 1 / (sigma * sqrt(2.0 * 3.1415927))
               * exp (- (j * j) / (2.0 * sigma * sigma));
 
 /* normalization */
@@ -219,13 +219,13 @@ for (i=1; i<=nx; i++)
     for (j=1; j<=ny; j++)
         help[j+length-1] = f[i][j];
 
-    /* assign reflecting boundary conditions */   
+    /* assign reflecting boundary conditions */
     for (p=1; p<=length; p++)
       {
         help[length-p]      = help[length+p-1];
         help[ny+length-1+p] = help[ny+length-p];
       }
-    
+
     /* convolution step */
     for (j=length; j<=ny+length-1; j++)
         {
@@ -359,8 +359,8 @@ void traceedge
     float T2        // in:      higher threshold
 )
 
-// Consider the neighbours of pixel (i,j). If a neighbour is under the higher 
-// threshold T2 and over the lower threshold T1 add this pixel to the 
+// Consider the neighbours of pixel (i,j). If a neighbour is under the higher
+// threshold T2 and over the lower threshold T1 add this pixel to the
 // edge pixels and repeat all steps for that pixel.
 
 {
@@ -406,12 +406,50 @@ void getderivatives
 // the grid size h is assumed to be 1
 
 {
-    int i,j;
+    int i,j,k,l;
+    int filterx[3][3] = {{-1, 0, 1},
+                         {-2, 0, 2},
+                         {-1, 0, 1}};
+    int filtery[3][3] = {{-1, -2, -1},
+                         {0, 0, 0},
+                         {1, 2, 1}};
+
     // compute the derivatives of u using the sobel operator
-    // TODO: missing code here
+
     /*
       INSERT MISSING CODE HERE
     */
+    // finding derivative in x direction by convolution of u with filterx
+    for (i=0; i<nx; i++) { // input rows
+        for (j=0; j<ny; j++) { // input columns
+            for (k=0; k<3; k++) { // filter rows
+                for (l=0; l<3; l++){ // filter columns
+                  int ib = i + (k - 1);
+                  int jb = j + (l - 1) ;
+
+                  if (ib >=0 && ib < nx && jb >=0 && jb < ny) {
+                    dx[i][j] += u[ib][jb] * filterx[k][l];
+                  }
+                }
+            }
+        }
+    }
+
+    // finding derivative in y direction by convolution of u with filtery
+    for (i=0; i<nx; i++) { // input rows
+        for (j=0; j<ny; j++) { // input columns
+            for (k=0; k<3; k++) { // filter rows
+                for (l=0; l<3; l++){ // filter columns
+                  int ib = i + (k - 1);
+                  int jb = j + (l - 1) ;
+
+                  if (ib >=0 && ib < nx && jb >=0 && jb < ny) {
+                    dy[i][j] += u[ib][jb] * filtery[k][l];
+                  }
+                }
+            }
+        }
+    }
 }
 
 
@@ -435,7 +473,7 @@ void hysteresis_thresholding
     for (i=1; i<nx+1; ++i)
         for (j=1; j<ny+1; ++j)
         {
-            if(u[i][j]>=T2) 
+            if(u[i][j]>=T2)
                 traceedge(i,j,u,T1,T2);
         }
 
@@ -443,7 +481,7 @@ void hysteresis_thresholding
     for (i=1; i<nx+1; ++i)
         for (j=1; j<ny+1; ++j)
         {
-            if(u[i][j]<255) 
+            if(u[i][j]<255)
                 u[i][j]=0.0f;
         }
 }
