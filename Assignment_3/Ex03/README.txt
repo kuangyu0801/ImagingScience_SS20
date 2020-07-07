@@ -1,6 +1,11 @@
 Imaging Science Task 6
 Canny Edge Detector
 
+Team:
+Kuang Yu Li, st169971@stud.uni-stuttgart.de, 3440829
+Ya Jen Hsu, st169013@stud.uni-stuttgart.de, 3449448
+Gabriella Ilena, st169935@stud.uni-stuttgart.de, 3440942
+
 b) To obtain the edge of image objects.pgm, we have chosen the parameters sigma=0.1, T1=250/3, and T2=250. 
 
 Choosing sigma:
