@@ -32,8 +32,8 @@ for (i=0; i<nx; i++) {
     
     /* update coefficient */
     /* by complex number division */
-    ur[i][j] = ((ur[i][j]*vr + ui[i][j]*vi) / N;
-    ui[i][j] = ((ui[i][j]*vr - ur[i][j]*vi) / N;
+    ur[i][j] = (ur[i][j]*vr + ui[i][j]*vi) / N;
+    ui[i][j] = (ui[i][j]*vr - ur[i][j]*vi) / N;
   }
 }
 
