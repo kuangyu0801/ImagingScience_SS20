@@ -1,0 +1,23 @@
+Imaging Science SS20
+Assignment 4
+
+Team:
+Kuang Yu Li, st169971@stud.uni-stuttgart.de, 3440829
+Ya Jen Hsu, st169013@stud.uni-stuttgart.de, 3449448
+Gabriella Ilena, st169935@stud.uni-stuttgart.de, 3440942
+
+4a). The parameters used:
+- Patch radius: 10
+- Search window size: 5
+- Sigma: 10
+
+4b). The parameters used:
+- Sigma: 2
+
+4c). Observation: the difference of input image (barbara) and image a) produces a more "pure" noise, i.e. the denoising process was successfully able to suppress noise without losing much of the important details of the input image. On the other hand, in the difference between input image and the one in b), we can still see the edges and details, which means these were lost when denoising using Gaussian convolution. This happens because convolution with Gaussian smooths edges and produces a blurred image, thus losing the sharpness of edges and details.
+
+The result is shifted by 127.5 so that a pixel difference of 0 would produce a grey value of 127.5 and we can see the output noise in this way. 
+
+In the optimal case, the difference image should contain pure noise with no details/edges from the input image, since we want to preserve those details in the denoised image.
+
+5.
