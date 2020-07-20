@@ -31,7 +31,7 @@ for (i=0; i<nx; i++) {
     N = vr*vr + vi*vi + param;
     
     /* update coefficient */
-    /* by complex number division */
+    /* nominator: h* x u = (hr - hi)*(ur + ui) */
     ur[i][j] = (ur[i][j]*vr + ui[i][j]*vi) / N;
     ui[i][j] = (ui[i][j]*vr - ur[i][j]*vi) / N;
   }
