@@ -6,6 +6,7 @@ Kuang Yu Li, st169971@stud.uni-stuttgart.de, 3440829
 Ya Jen Hsu, st169013@stud.uni-stuttgart.de, 3449448
 Gabriella Ilena, st169935@stud.uni-stuttgart.de, 3440942
 
+Problem 4:
 4a). The parameters used:
 - Patch radius: 10
 - Search window size: 5
@@ -20,4 +21,7 @@ The result is shifted by 127.5 so that a pixel difference of 0 would produce a g
 
 In the optimal case, the difference image should contain pure noise with no details/edges from the input image, since we want to preserve those details in the denoised image.
 
-5.
+Problem 5:
+5b). Parameter K=0.02
+5c). Parameter K=0.008
+5d). Parameter K=0.008. Here the runtime to deblur the image is longer since finding the Fourier Transform of the image is more complex, because the blurred image contains many high frequencies. Due to this, the computational complexity during filtering and applying the inverse Fourier transform is also higher than in the previous Gaussian blur case.
